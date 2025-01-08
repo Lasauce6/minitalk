@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 11:01:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/08 23:29:48 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/08 22:10:56 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,23 +31,49 @@ static void	send_char(int pid, unsigned char c)
 	}
 }
 
+static void	handle_signal(int sig)
+{
+	if (sig == SIGUSR1)
+	{
+		ft_printf("Message transmited\n");
+		exit(0);
+	}
+}
+
+static void	send_pid(int pid)
+{
+	char	*s_pid;
+
+	s_pid = ft_itoa(getpid());
+	while (*s_pid)
+	{
+		send_char(pid, (unsigned char) *s_pid);
+		s_pid++;
+	}
+	send_char(pid, '\0');
+}
+
 int	main(int argc, char **argv)
 {
 	int	pid;
 
 	if (argc == 3)
 	{
+		ft_printf("%d\n", getpid());
+		signal(SIGUSR1, handle_signal);
 		pid = ft_atoi(argv[1]);
+		send_pid(pid);
 		while (*argv[2])
 		{
 			send_char(pid, (unsigned char) *argv[2]);
 			(argv[2])++;
 		}
 		send_char(pid, '\0');
+		pause();
 		return (0);
 	}
 	else
-		ft_putstr_fd("Error: usage ./client <server pid> <str to send>",
+		ft_putstr_fd("Error: usage ./client <server pid> <str to send>\n",
 			STDERR_FILENO);
 	return (1);
 }
