@@ -6,7 +6,7 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 10:48:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/08 23:21:05 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/09 15:08:26 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,12 @@ static void	handle_char(unsigned char c, int *client_pid)
 		(ft_printf("Malloc error"), exit(1));
 	if (c == '\0')
 	{
+		if (!ft_strncmp(buff, "exit", 9))
+		{
+			free(buff);
+			kill(*client_pid, SIGUSR1);
+			exit(0);
+		}
 		ft_printf("%s\n", buff);
 		free(buff);
 		buff = NULL;

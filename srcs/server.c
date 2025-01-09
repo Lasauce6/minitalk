@@ -6,7 +6,7 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 10:48:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/08 23:51:11 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/09 14:32:12 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	handle_char(unsigned char c)
 		(ft_printf("Malloc error"), exit(1));
 	if (c == '\0')
 	{
-		if (ft_strncmp(buff, "exit", 9))
+		if (!ft_strncmp(buff, "exit", 9))
 		{
 			free(buff);
 			exit(0);
@@ -38,11 +38,13 @@ static void	handle_char(unsigned char c)
 	}
 }
 
-static void	handle_signal(int sig)
+static void	handle_signal(int sig, siginfo_t *info, void *context)
 {
 	static unsigned char	c;
 	static int				i;
 
+	(void) context;
+	(void) info;
 	c |= (sig == SIGUSR1);
 	i++;
 	if (i == 8)
@@ -57,9 +59,14 @@ static void	handle_signal(int sig)
 
 int	main(void)
 {
+	struct sigaction	sa;
+
+	sa.sa_sigaction = handle_signal;
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
 	ft_printf("PID : %d\nSend \"exit\" to kill the server\n", getpid());
-	signal(SIGUSR1, handle_signal);
-	signal(SIGUSR2, handle_signal);
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
 		pause();
 	return (0);
