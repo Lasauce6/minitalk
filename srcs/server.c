@@ -6,7 +6,7 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 10:48:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/09 14:32:12 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/10 15:42:51 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,17 @@
 
 static void	handle_char(unsigned char c)
 {
-	static char	*buff;
-	char		*tmp;
+	static char	*buff = NULL;
 
-	tmp = buff;
+	buff = ft_strjoin_char(buff, c);
 	if (!buff)
-		buff = NULL;
-	buff = ft_strjoin(buff, (char *) &c);
-	if (tmp)
-		free(tmp);
-	if (!buff)
-		(ft_printf("Malloc error"), exit(1));
+	{
+		ft_printf("Malloc error\n");
+		exit(1);
+	}
 	if (c == '\0')
 	{
-		if (!ft_strncmp(buff, "exit", 9))
+		if (!ft_strncmp(buff, "exit", 5))
 		{
 			free(buff);
 			exit(0);
@@ -40,12 +37,12 @@ static void	handle_char(unsigned char c)
 
 static void	handle_signal(int sig, siginfo_t *info, void *context)
 {
-	static unsigned char	c;
-	static int				i;
+	static unsigned char	c = 0;
+	static int				i = 0;
 
-	(void) context;
-	(void) info;
-	c |= (sig == SIGUSR1);
+	(void)context;
+	(void)info;
+	c = (c << 1) | (sig == SIGUSR1);
 	i++;
 	if (i == 8)
 	{
@@ -53,8 +50,6 @@ static void	handle_signal(int sig, siginfo_t *info, void *context)
 		i = 0;
 		c = 0;
 	}
-	else
-		c <<= 1;
 }
 
 int	main(void)
@@ -62,7 +57,7 @@ int	main(void)
 	struct sigaction	sa;
 
 	sa.sa_sigaction = handle_signal;
-	sa.sa_flags = 0;
+	sa.sa_flags = SA_SIGINFO;
 	sigemptyset(&sa.sa_mask);
 	ft_printf("PID : %d\nSend \"exit\" to kill the server\n", getpid());
 	sigaction(SIGUSR1, &sa, NULL);

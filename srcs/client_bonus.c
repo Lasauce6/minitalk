@@ -6,7 +6,7 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 11:01:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/08 22:10:56 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/10 16:38:04 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,13 +62,13 @@ int	main(int argc, char **argv)
 		ft_printf("%d\n", getpid());
 		signal(SIGUSR1, handle_signal);
 		pid = ft_atoi(argv[1]);
-		send_pid(pid);
 		while (*argv[2])
 		{
 			send_char(pid, (unsigned char) *argv[2]);
 			(argv[2])++;
 		}
 		send_char(pid, '\0');
+		send_pid(pid);
 		pause();
 		return (0);
 	}

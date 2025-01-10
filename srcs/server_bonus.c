@@ -6,91 +6,66 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 10:48:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/09 15:08:26 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/10 16:36:31 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minitalk.h"
 
-static void	handle_char(unsigned char c, int *client_pid)
+static void	print_message_or_exit(char **message, char **client_pid)
 {
-	static char	*buff;
-	char		*tmp;
+	if (!ft_strncmp(*message, "exit", 9))
+	{
+		kill(ft_atoi(*client_pid), SIGUSR1);
+		free(*message);
+		free(*client_pid);
+		exit(0);
+	}
+	ft_printf("%s\n", *message);
+	kill(ft_atoi(*client_pid), SIGUSR1);
+	free(*message);
+	free(*client_pid);
+	*message = NULL;
+	*client_pid = NULL;
+}
 
-	tmp = buff;
-	buff = ft_strjoin(buff, (char *) &c);
-	if (tmp)
-		free(tmp);
+static void	handle_char(unsigned char c)
+{
+	static char	*buff = NULL;
+	static char	*message;
+
+	buff = ft_strjoin_char(buff, c);
 	if (!buff)
 		(ft_printf("Malloc error"), exit(1));
 	if (c == '\0')
 	{
-		if (!ft_strncmp(buff, "exit", 9))
+		if (!message)
 		{
-			free(buff);
-			kill(*client_pid, SIGUSR1);
-			exit(0);
+			message = buff;
+			buff = NULL;
 		}
-		ft_printf("%s\n", buff);
-		free(buff);
-		buff = NULL;
-		kill(*client_pid, SIGUSR1);
-		*client_pid = 0;
+		else
+			print_message_or_exit(&message, &buff);
 	}
-}
-
-static void	get_message(int sig, int *client_pid)
-{
-	static unsigned char	c;
-	static int				i;
-
-	c |= (sig == SIGUSR1);
-	i++;
-	if (i == 8)
-	{
-		handle_char(c, client_pid);
-		i = 0;
-		c = 0;
-	}
-	else
-		c <<= 1;
-}
-
-static void	get_client_pid(int sig, int *client_pid)
-{
-	static unsigned char	c;
-	static int				i;
-	static char				buff[8];
-	static int				count;
-
-	c |= (sig == SIGUSR1);
-	i++;
-	if (i == 8)
-	{
-		if (c == '\0')
-		{
-			buff[count] = '\0';
-			*client_pid = ft_atoi(buff);
-			ft_printf("%d\n\n", *client_pid);
-		}
-		buff[count++] = c;
-		i = 0;
-		c = 0;
-	}
-	else
-		c <<= 1;
 }
 
 static void	handle_signal(int sig, siginfo_t *info, void *context)
 {
-	static int	client_pid;
+	static unsigned char	c = 0;
+	static int				i = 0;
 
 	(void) context;
 	(void) info;
-	if (client_pid == 0)
-		get_client_pid(sig, &client_pid);
+	c |= (sig == SIGUSR1);
+	i++;
+	if (i == 8)
+	{
+		handle_char(c);
+		i = 0;
+		c = 0;
+	}
 	else
-		get_message(sig, &client_pid);
+		c <<= 1;
 }
 
 int	main(void)
@@ -100,7 +75,7 @@ int	main(void)
 	sa.sa_sigaction = handle_signal;
 	sa.sa_flags = 0;
 	sigemptyset(&sa.sa_mask);
-	ft_printf("%d\n", getpid());
+	ft_printf("PID : %d\nSend \"exit\" to kill the server\n", getpid());
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
