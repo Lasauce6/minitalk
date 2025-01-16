@@ -6,7 +6,7 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 10:48:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/10 16:36:31 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/16 12:30:29 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,13 @@ static void	print_message_or_exit(char **message, char **client_pid)
 static void	handle_char(unsigned char c)
 {
 	static char	*buff = NULL;
+	char		*tmp;
 	static char	*message;
 
+	tmp = buff;
 	buff = ft_strjoin_char(buff, c);
+	if (tmp)
+		free(tmp);
 	if (!buff)
 		(ft_printf("Malloc error"), exit(1));
 	if (c == '\0')

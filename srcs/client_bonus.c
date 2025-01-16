@@ -6,7 +6,7 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 11:01:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/10 16:38:04 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/16 12:27:29 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	send_char(int pid, unsigned char c)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
-		usleep(42);
+		usleep(300);
 	}
 }
 
@@ -43,13 +43,20 @@ static void	handle_signal(int sig)
 static void	send_pid(int pid)
 {
 	char	*s_pid;
+	int		i;
 
 	s_pid = ft_itoa(getpid());
-	while (*s_pid)
+	if (!s_pid)
+		(ft_putstr_fd("Error: malloc error\n", STDERR_FILENO),
+			exit(1));
+	i = 0;
+	while (s_pid[i])
 	{
-		send_char(pid, (unsigned char) *s_pid);
-		s_pid++;
+		send_char(pid, (unsigned char) s_pid[i]);
+		usleep(300);
+		i++;
 	}
+	free(s_pid);
 	send_char(pid, '\0');
 }
 
@@ -65,9 +72,11 @@ int	main(int argc, char **argv)
 		while (*argv[2])
 		{
 			send_char(pid, (unsigned char) *argv[2]);
+			usleep(300);
 			(argv[2])++;
 		}
 		send_char(pid, '\0');
+		usleep(300);
 		send_pid(pid);
 		pause();
 		return (0);

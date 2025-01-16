@@ -6,7 +6,7 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 10:48:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/10 15:42:51 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/16 12:30:17 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,12 @@
 static void	handle_char(unsigned char c)
 {
 	static char	*buff = NULL;
+	char		*tmp;
 
+	tmp = buff;
 	buff = ft_strjoin_char(buff, c);
+	if (tmp)
+		free(tmp);
 	if (!buff)
 	{
 		ft_printf("Malloc error\n");

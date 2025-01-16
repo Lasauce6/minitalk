@@ -6,7 +6,7 @@
 /*   By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 11:01:07 by rbaticle          #+#    #+#             */
-/*   Updated: 2025/01/10 15:05:30 by rbaticle         ###   ########.fr       */
+/*   Updated: 2025/01/16 12:27:13 by rbaticle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void	send_char(int pid, unsigned char c)
 			if (kill(pid, SIGUSR2) == -1)
 				ft_putstr_fd("Error: signal failed\n", STDERR_FILENO);
 		}
-		usleep(100);
+		usleep(300);
 	}
 }
 
@@ -44,6 +44,7 @@ int	main(int argc, char **argv)
 		while (*argv[2])
 		{
 			send_char(pid, (unsigned char)*argv[2]);
+			usleep(300);
 			(argv[2])++;
 		}
 		send_char(pid, '\0');

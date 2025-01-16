@@ -6,7 +6,7 @@
 #    By: rbaticle <rbaticle@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/07 20:13:23 by rbaticle          #+#    #+#              #
-#    Updated: 2025/01/10 15:43:50 by rbaticle         ###   ########.fr        #
+#    Updated: 2025/01/16 12:31:26 by rbaticle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,13 +55,13 @@ bonus: $(CLB) $(SRVB)
 $(LFT):
 	@make printf -C $(LFT_DIR)
 
-fsanitize:
+fsanitize: $(LFT)
 	$(CC) -g -fsanitize=address $(CFLAGS) $(SRCS_SRV) -L $(LFT_DIR) -lft -I $(INCLUDES) -o $(SRV)
 	$(CC) -g -fsanitize=address $(CFLAGS) $(SRCS_CL) -L $(LFT_DIR) -lft -I $(INCLUDES) -o $(CL)
 	$(CC) -g -fsanitize=address $(CFLAGS) $(SRCS_SRV_BONUS) -L $(LFT_DIR) -lft -I $(INCLUDES) -o $(SRVB)
 	$(CC) -g -fsanitize=address $(CFLAGS) $(SRCS_CL_BONUS) -L $(LFT_DIR) -lft -I $(INCLUDES) -o $(CLB)
 
-debug:
+debug: $(LFT)
 	$(CC) -g $(CFLAGS) $(SRCS_SRV) -L $(LFT_DIR) -lft -I $(INCLUDES) -o $(SRV)
 	$(CC) -g $(CFLAGS) $(SRCS_CL) -L $(LFT_DIR) -lft -I $(INCLUDES) -o $(CL)
 	$(CC) -g $(CFLAGS) $(SRCS_SRV_BONUS) -L $(LFT_DIR) -lft -I $(INCLUDES) -o $(SRVB)
